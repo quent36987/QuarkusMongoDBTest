@@ -1,0 +1,27 @@
+### GET
+GET http://localhost:8081/api/posts
+Accept: application/json
+
+### GET
+GET http://localhost:8081/api/posts/123456789
+Accept: application/json
+
+### GET
+GET http://localhost:8081/api/posts?show_env=1
+Accept: application/json
+
+### DELETE
+DELETE http://localhost:8081/api/posts/123456789
+Accept: application/json
+X-user-id: uuid
+
+### POST
+POST http://localhost:8081/api/posts
+Content-Type: application/json
+X-user-id: uuid
+
+{
+  "text": "Contenu du nouveau post.",
+  "media": "http://example.com/media/image.jpg"
+}
+
