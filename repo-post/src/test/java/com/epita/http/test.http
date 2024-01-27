@@ -3,7 +3,7 @@ GET http://localhost:8081/api/posts
 Accept: application/json
 
 ### GET
-GET http://localhost:8081/api/posts/123456789
+GET http://localhost:8081/api/posts/65b5757a0c912575d93dce7c
 Accept: application/json
 
 ### GET

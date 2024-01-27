@@ -6,6 +6,7 @@ import com.epita.repository.PostRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.bson.types.ObjectId;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class PostService {
         return postRepository.findAll().stream().toList();
     }
 
-    public PostModel getPostById(String postId) {
+    public PostModel getPostById(ObjectId postId) {
         return postRepository.findById(postId);
     }
 
@@ -37,7 +38,7 @@ public class PostService {
         return postModel;
     }
 
-    public boolean deletePost(String userId, String postId) {
+    public boolean deletePost(String userId, ObjectId postId) {
         PostModel post = postRepository.findById(postId);
 
         if (post == null || !post.userId.equals(userId)) {

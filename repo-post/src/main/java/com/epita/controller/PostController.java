@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.bson.types.ObjectId;
 import org.jboss.resteasy.reactive.RestHeader;
 
 import java.util.List;
@@ -31,8 +32,8 @@ public class PostController {
 
     @GET
     @Path("/{post_id}")
-    public Response getPostById(@PathParam("post_id") String postId) {
-        if (postId == null || postId.isEmpty()) {
+    public Response getPostById(@PathParam("post_id") ObjectId postId) {
+        if (postId == null ) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
@@ -63,7 +64,7 @@ public class PostController {
 
     @DELETE
     @Path("/{post_id}")
-    public Response deletePost(@BeanParam Parameter parameter, @PathParam("post_id") String postId) {
+    public Response deletePost(@BeanParam Parameter parameter, @PathParam("post_id") ObjectId postId) {
         if (parameter.userId == null || parameter.userId.isEmpty()) {
             // FIXME verify if user exists
             return Response.status(400).build();
@@ -75,7 +76,7 @@ public class PostController {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        return Response.noContent().build();
+        return Response.ok().build();
     }
 }
 

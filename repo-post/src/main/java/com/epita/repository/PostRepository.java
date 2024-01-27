@@ -7,7 +7,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.bson.types.ObjectId;
 
 @ApplicationScoped
-public class PostRepository implements PanacheMongoRepositoryBase<PostModel, String> {
+public class PostRepository implements PanacheMongoRepositoryBase<PostModel, ObjectId> {
 
 }
 
