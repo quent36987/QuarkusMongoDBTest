@@ -1,11 +1,13 @@
 package com.epita.service;
 
 import com.epita.controller.RequestBody.CreatePostRequestBody;
+import com.epita.controller.RequestBody.CreateReplyRequestBody;
 import com.epita.model.PostModel;
 import com.epita.repository.PostRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import org.bson.types.ObjectId;
 
 import java.util.List;
@@ -48,6 +50,50 @@ public class PostService {
         postRepository.deleteById(postId);
 
         return true;
+    }
+
+    public List<PostModel> getRepliesByPostId(ObjectId postId) {
+        return postRepository.find("replyPostId", postId).list();
+    }
+
+    public Response createReply(ObjectId postId, String userId, CreateReplyRequestBody reply) {
+        PostModel post = postRepository.findById(postId);
+
+        if (post == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        PostModel replyPost = new PostModel();
+        replyPost.userId = userId;
+        replyPost.text = reply.getText();
+        replyPost.media = reply.getMedia();
+        replyPost.createdAt = java.time.LocalDateTime.now().toString();
+        replyPost.replyPostId = postId.toString();
+        replyPost.repostId = null;
+
+        postRepository.persist(replyPost);
+
+        return Response.ok(replyPost).build();
+    }
+
+    public Response createRepost(ObjectId postId, String userId) {
+        PostModel post = postRepository.findById(postId);
+
+        if (post == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        PostModel repost = new PostModel();
+        repost.userId = userId;
+        repost.text = post.text;
+        repost.media = post.media;
+        repost.createdAt = java.time.LocalDateTime.now().toString();
+        repost.replyPostId = post.replyPostId;
+        repost.repostId = postId.toString();
+
+        postRepository.persist(repost);
+
+        return Response.ok(repost).build();
     }
 }
 

@@ -65,7 +65,6 @@ public class PostEndpointIntegrationTest {
     }
 
 
-
     private void assertResponse(Response response, Integer expectedStatusCode) {
         assertResponse(response, expectedStatusCode, null);
     }
@@ -148,8 +147,4 @@ public class PostEndpointIntegrationTest {
 
         assertEquals(404,reponse.statusCode(),"Status code should be 404, got " + reponse.statusCode());
     }
-
-
-
-
 }
