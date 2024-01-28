@@ -33,6 +33,7 @@
     <modules>
         <module>repo-post</module>
         <module>repo-social</module>
+        <module>srvc-search</module>
     </modules>
 
     <dependencyManagement>

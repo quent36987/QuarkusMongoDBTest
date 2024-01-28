@@ -1,7 +1,10 @@
 package com.epita.controller;
 
 import com.epita.controller.RequestBody.CreatePostRequestBody;
+import com.epita.model.PostDeleteRedisMessage;
 import com.epita.model.PostModel;
+import com.epita.model.PostRedisMessage;
+import com.epita.service.MyPublisher;
 import com.epita.service.PostService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -20,6 +23,9 @@ public class PostController {
     @Inject
     PostService postService;
 
+    @Inject
+    MyPublisher myPublisher;
+
     public static class Parameter {
         @RestHeader("X-user-id")
         String userId;
@@ -33,7 +39,7 @@ public class PostController {
     @GET
     @Path("/{post_id}")
     public Response getPostById(@PathParam("post_id") ObjectId postId) {
-        if (postId == null ) {
+        if (postId == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
@@ -55,6 +61,11 @@ public class PostController {
 
         PostModel createdPost = postService.createPost(parameter.userId, post);
 
+        PostRedisMessage postRedisMessage = new PostRedisMessage(createdPost.id.toString(),
+                createdPost.text, createdPost.media);
+
+        myPublisher.publishPost(postRedisMessage);
+
         if (createdPost == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -75,6 +86,8 @@ public class PostController {
         if (!isDelete) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
+
+        myPublisher.publishDeletePost(new PostRedisMessage(postId.toString(), null, null));
 
         return Response.ok().build();
     }

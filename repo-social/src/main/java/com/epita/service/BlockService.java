@@ -26,11 +26,7 @@ public class BlockService {
     public boolean isBlockedBy(String requestUserId, String destUserId) {
         BlockModel block = blockRepository.find("userId = ?1 and blockId = ?2", destUserId, requestUserId).firstResult();
 
-        if (block == null) {
-            return false;
-        }
-
-        return true;
+        return block != null;
     }
 
     public BlockModel blockUser(String userId, String blockId) {
