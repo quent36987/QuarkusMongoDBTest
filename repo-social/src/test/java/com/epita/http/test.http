@@ -1,3 +1,4 @@
+
 ### GET All Posts
 GET http://localhost:8081/api/posts
 Accept: application/json
@@ -26,65 +27,65 @@ X-user-id: uuid
 }
 
 ### POST Like Post
-POST http://localhost:8081/api/posts/123456789/like
+POST http://localhost:8082/api/posts/65b578af1b98780d9227a9bc/like
 Accept: application/json
-X-user-id: uuid
+X-user-id: quentin
 
 ### POST Unlike Post
-POST http://localhost:8081/api/posts/123456789/unlike
+POST http://localhost:8082/api/posts/123456789/unlike
 Accept: application/json
 X-user-id: uuid
 
 ### DELETE Unlike Post
-DELETE http://localhost:8081/api/posts/123456789/like
+DELETE http://localhost:8082/api/posts/123456789/like
 Accept: application/json
 X-user-id: uuid
 
 ### DELETE Unlike Post
-DELETE http://localhost:8081/api/posts/123456789/unlike
+DELETE http://localhost:8082/api/posts/123456789/unlike
 Accept: application/json
 X-user-id: uuid
 
 ### POST Follow User
-POST http://localhost:8081/api/users/123456789/follow
+POST http://localhost:8082/api/users/123456789/follow
 Accept: application/json
 X-user-id: uuid
 
 ### DELETE Unfollow User
-DELETE http://localhost:8081/api/users/123456789/follow
+DELETE http://localhost:8082/api/users/123456789/follow
 Accept: application/json
 X-user-id: uuid
 
 ### POST Block User
-POST http://localhost:8081/api/users/123456789/block
+POST http://localhost:8082/api/users/123456789/block
 Accept: application/json
 X-user-id: uuid
 
 ### DELETE Unblock User
-DELETE http://localhost:8081/api/users/123456789/block
+DELETE http://localhost:8082/api/users/123456789/block
 Accept: application/json
 X-user-id: uuid
 
 ### GET Likes for Post
-GET http://localhost:8081/api/posts/123456789/likes
+GET http://localhost:8082/api/posts/123456789/likes
 Accept: application/json
 
 ### GET Liked Posts for User
-GET http://localhost:8081/api/users/123456789/liked-posts
+GET http://localhost:8082/api/users/123456789/liked-posts
 Accept: application/json
 
 ### GET User's Follows
-GET http://localhost:8081/api/users/123456789/follows
+GET http://localhost:8082/api/users/123456789/follows
 Accept: application/json
 
 ### GET User's Followers
-GET http://localhost:8081/api/users/123456789/followers
+GET http://localhost:8082/api/users/123456789/followers
 Accept: application/json
 
 ### GET User's Block List
-GET http://localhost:8081/api/users/123456789/block-list
+GET http://localhost:8082/api/users/123456789/block-list
 Accept: application/json
 
 ### GET Users who Blocked User
-GET http://localhost:8081/api/users/123456789/blocked-by
+GET http://localhost:8082/api/users/123456789/blocked-by
 Accept: application/json

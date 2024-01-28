@@ -32,6 +32,7 @@
 
     <modules>
         <module>repo-post</module>
+        <module>repo-social</module>
     </modules>
 
     <dependencyManagement>
