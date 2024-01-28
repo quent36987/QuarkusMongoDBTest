@@ -1,6 +1,7 @@
 package com.epita.controller;
 
 import com.epita.model.LikeModel;
+import com.epita.service.BlockService;
 import com.epita.service.LikeService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -16,6 +17,9 @@ public class LikeController {
     @Inject
     LikeService likeService;
 
+    @Inject
+    BlockService blockService;
+
     public static class Parameter {
         @RestHeader("X-user-id")
         String userId;
@@ -23,7 +27,7 @@ public class LikeController {
 
 
     @GET
-    @Path("/{post_id}/like")
+    @Path("/{post_id}/likes")
     public Response getAllLikesByPostId(@PathParam("post_id") String postId) {
         if (postId == null || postId.isEmpty()) {
             return Response.status(400).build();
@@ -38,6 +42,10 @@ public class LikeController {
         if (parameter.userId == null || parameter.userId.isEmpty() || postId == null || postId.isEmpty()) {
             // FIXME: vérifier si l'utilisateur existe
             return Response.status(404).build();
+        }
+
+        if (blockService.isBlockedBy(parameter.userId, postId)) {
+            return Response.status(403).build();
         }
 
         LikeModel like = likeService.likePost(parameter.userId, postId);
@@ -55,6 +63,10 @@ public class LikeController {
         if (parameter.userId == null || parameter.userId.isEmpty() || postId == null || postId.isEmpty()) {
             // FIXME: vérifier si l'utilisateur existe
             return Response.status(404).build();
+        }
+
+        if (blockService.isBlockedBy(parameter.userId, postId)) {
+            return Response.status(403).build();
         }
 
         LikeModel unlike =  likeService.unlikePost(parameter.userId, postId);

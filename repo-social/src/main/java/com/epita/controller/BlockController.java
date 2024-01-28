@@ -27,7 +27,7 @@ public class BlockController {
     @Path("/{user_id}/block-list")
     public Response getBlockedUsersByUserId(@PathParam("user_id") String userId) {
         if (userId == null || userId.isEmpty()) {
-            return Response.status(400).build();
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
         List<BlockModel> blockedUsers = blockService.getBlockedUsersByUserId(userId);
@@ -35,14 +35,30 @@ public class BlockController {
         return Response.ok(blockedUsers).build();
     }
 
-    @POST
-    @Path("/{user_id}/block")
-    public Response blockUser(@BeanParam Parameter parameter, @PathParam("user_id") String userId, String blockId) {
-        if (parameter.userId == null || parameter.userId.isEmpty() || userId == null || userId.isEmpty() || blockId == null || blockId.isEmpty()) {
-            return Response.status(404).build();
+    @GET
+    @Path("/{user_id}/blocked-by")
+    public Response getBlockedByUsersByUserId(@PathParam("user_id") String userId) {
+        if (userId == null || userId.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        BlockModel block = blockService.blockUser(userId, blockId);
+        List<BlockModel> blockedByUsers = blockService.getBlockedByUsersByUserId(userId);
+
+        return Response.ok(blockedByUsers).build();
+    }
+
+    @POST
+    @Path("/{user_id}/block")
+    public Response blockUser(@BeanParam Parameter parameter, @PathParam("user_id") String userId) {
+        if (parameter.userId == null || parameter.userId.isEmpty() || userId == null || userId.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        if (blockService.isBlockedBy(parameter.userId, userId)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+
+        BlockModel block = blockService.blockUser(parameter.userId, userId);
 
         return Response.ok(block).build();
     }
@@ -51,7 +67,7 @@ public class BlockController {
     @Path("/{user_id}/block")
     public Response unblockUser(@BeanParam Parameter parameter, @PathParam("user_id") String userId, String blockId) {
         if (parameter.userId == null || parameter.userId.isEmpty() || userId == null || userId.isEmpty() || blockId == null || blockId.isEmpty()) {
-            return Response.status(404).build();
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
         boolean unblocked = blockService.unblockUser(userId, blockId);
@@ -59,7 +75,7 @@ public class BlockController {
         if (unblocked) {
             return Response.ok().build();
         } else {
-            return Response.status(404).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 }

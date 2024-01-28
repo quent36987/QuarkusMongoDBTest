@@ -20,6 +20,10 @@ public class FollowService {
         return followRepository.find("userId", userId).list();
     }
 
+    public List<FollowModel> getFollowersByUserId(String userId) {
+        return followRepository.find("followId", userId).list();
+    }
+
     public FollowModel followUser(String userId, String followId) {
         FollowModel follow = new FollowModel();
         follow.userId = userId;
