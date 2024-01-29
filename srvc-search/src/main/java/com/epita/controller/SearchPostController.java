@@ -17,9 +17,11 @@ public class SearchPostController {
     @Inject
     SearchPostService searchPostService;
 
+    // GET http://localhost:8083/api/posts/search?keywords=heureux%20en&hashtags=peu,très
+    // recherche les posts contenant les mots "heureux" et "en" et obligatoirement "peu" et "très"
     @GET
     public List<PostModel> searchPosts(@QueryParam("keywords") String keywords,
-                                       @QueryParam("hashtags") List<String> hashtags) throws IOException {
+                                       @QueryParam("hashtags") String hashtags) throws IOException {
         return searchPostService.searchPosts(keywords, hashtags);
     }
 }

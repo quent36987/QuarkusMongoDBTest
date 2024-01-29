@@ -30,7 +30,7 @@ public class LikeController {
     @Path("/{post_id}/likes")
     public Response getAllLikesByPostId(@PathParam("post_id") String postId) {
         if (postId == null || postId.isEmpty()) {
-            return Response.status(400).build();
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
         return Response.ok(likeService.getAllLikesByPostId(postId)).build();
@@ -41,11 +41,11 @@ public class LikeController {
     public Response likePost(@BeanParam Parameter parameter, @PathParam("post_id") String postId) {
         if (parameter.userId == null || parameter.userId.isEmpty() || postId == null || postId.isEmpty()) {
             // FIXME: vérifier si l'utilisateur existe
-            return Response.status(404).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
 
         if (blockService.isBlockedBy(parameter.userId, postId)) {
-            return Response.status(403).build();
+            return Response.status(Response.Status.FORBIDDEN).build();
         }
 
         LikeModel like = likeService.likePost(parameter.userId, postId);
@@ -53,7 +53,7 @@ public class LikeController {
         if (like != null) {
             return Response.ok(like).build();
         } else {
-            return Response.status(404).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 
@@ -62,11 +62,11 @@ public class LikeController {
     public Response unlikePost(@BeanParam Parameter parameter, @PathParam("post_id") String postId) {
         if (parameter.userId == null || parameter.userId.isEmpty() || postId == null || postId.isEmpty()) {
             // FIXME: vérifier si l'utilisateur existe
-            return Response.status(404).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
 
         if (blockService.isBlockedBy(parameter.userId, postId)) {
-            return Response.status(403).build();
+            return Response.status(Response.Status.FORBIDDEN).build();
         }
 
         LikeModel unlike =  likeService.unlikePost(parameter.userId, postId);
@@ -74,7 +74,7 @@ public class LikeController {
         if (unlike != null) {
             return Response.ok(unlike).build();
         } else {
-            return Response.status(400).build();
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
 
@@ -90,10 +90,10 @@ public class LikeController {
         return deleteLike(parameter, postId);
     }
 
-    private Response deleteLike(@BeanParam Parameter parameter, @PathParam("post_id") String postId) {
+    private Response deleteLike(Parameter parameter, String postId) {
         if (parameter.userId == null || parameter.userId.isEmpty()) {
             // FIXME: vérifier si l'utilisateur existe
-            return Response.status(404).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
 
         var unlikeUnlikeDelete = likeService.deletelikePost(parameter.userId, postId);
@@ -101,7 +101,7 @@ public class LikeController {
         if (unlikeUnlikeDelete) {
             return Response.ok().build();
         } else {
-            return Response.status(404).build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 }

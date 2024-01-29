@@ -8,9 +8,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class MyPublisher {
     private final PubSubCommands<PostRedisMessage> publisher;
+
     public MyPublisher(final RedisDataSource ds) {
         publisher = ds.pubsub(PostRedisMessage.class);
     }
+
     public void publishPost(final PostRedisMessage message) {
         publisher.publish("create-post", message);
     }

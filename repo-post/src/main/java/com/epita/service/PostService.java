@@ -47,9 +47,7 @@ public class PostService {
             return false;
         }
 
-        postRepository.deleteById(postId);
-
-        return true;
+        return postRepository.deleteById(postId);
     }
 
     public List<PostModel> getRepliesByPostId(ObjectId postId) {

@@ -1,7 +1,6 @@
 package com.epita.controller;
 
 import com.epita.controller.RequestBody.CreatePostRequestBody;
-import com.epita.model.PostDeleteRedisMessage;
 import com.epita.model.PostModel;
 import com.epita.model.PostRedisMessage;
 import com.epita.service.MyPublisher;
@@ -61,14 +60,13 @@ public class PostController {
 
         PostModel createdPost = postService.createPost(parameter.userId, post);
 
-        PostRedisMessage postRedisMessage = new PostRedisMessage(createdPost.id.toString(),
-                createdPost.text, createdPost.media);
-
-        myPublisher.publishPost(postRedisMessage);
-
         if (createdPost == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
+
+        PostRedisMessage postRedisMessage = new PostRedisMessage(createdPost.id.toString(),
+                createdPost.text, createdPost.media);
+        myPublisher.publishPost(postRedisMessage);
 
         return Response.ok(createdPost).build();
     }
