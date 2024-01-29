@@ -1,6 +1,7 @@
 package com.epita.controller;
 
 import com.epita.controller.RequestBody.CreatePostRequestBody;
+import com.epita.model.ActionModel;
 import com.epita.model.PostModel;
 import com.epita.model.PostRedisMessage;
 import com.epita.service.MyPublisher;
@@ -68,6 +69,8 @@ public class PostController {
                 createdPost.text, createdPost.media);
         myPublisher.publishPost(postRedisMessage);
 
+        myPublisher.publishAction(new ActionModel(parameter.userId, createdPost.id.toString(), "create"));
+
         return Response.ok(createdPost).build();
     }
 
@@ -86,6 +89,7 @@ public class PostController {
         }
 
         myPublisher.publishDeletePost(new PostRedisMessage(postId.toString(), null, null));
+        myPublisher.publishAction(new ActionModel(parameter.userId,postId.toString(), "delete"));
 
         return Response.ok().build();
     }

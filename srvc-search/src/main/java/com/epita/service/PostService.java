@@ -21,6 +21,10 @@ public class PostService {
     @Inject
     ElasticsearchClient elasticsearchClient;
 
+    public void createIndex() throws IOException {
+        elasticsearchClient.indices().create(b -> b.index("posts"));
+    }
+
     public void storePost(PostModel post) throws IOException {
         IndexRequest<PostModel> request = IndexRequest.of(
                 b -> b.index("posts")

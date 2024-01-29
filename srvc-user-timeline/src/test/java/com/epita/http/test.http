@@ -1,0 +1,99 @@
+
+### GET elastic search index
+GET http://localhost:8084/api/user/prout/timeline
+Accept: application/json
+
+### GET elastic search index
+GET http://localhost:8083/api/posts/search?keywords=heureux%20en&hashtags=peu,très
+Accept: application/json
+
+### GET All Posts
+GET http://localhost:8081/api/posts
+Accept: application/json
+
+### GET Post by ID
+GET http://localhost:8081/api/posts/65b5757a0c912575d93dce7c
+Accept: application/json
+
+### GET Posts with Environment Details
+GET http://localhost:8081/api/posts?show_env=1
+Accept: application/json
+
+### DELETE Post
+DELETE http://localhost:8081/api/posts/123456789
+Accept: application/json
+X-user-id: uuid
+
+### POST Create Post
+POST http://localhost:8081/api/posts
+Content-Type: application/json
+X-user-id: prout
+
+{
+  "text": "Quelques rayons de miel et de soleil.",
+  "media": ""
+}
+
+### POST Like Post
+POST http://localhost:8082/api/posts/65b578af1b98780d9227a9bc/like
+Accept: application/json
+X-user-id: quentin
+
+### POST Unlike Post
+POST http://localhost:8082/api/posts/123456789/unlike
+Accept: application/json
+X-user-id: uuid
+
+### DELETE Unlike Post
+DELETE http://localhost:8082/api/posts/123456789/like
+Accept: application/json
+X-user-id: uuid
+
+### DELETE Unlike Post
+DELETE http://localhost:8082/api/posts/123456789/unlike
+Accept: application/json
+X-user-id: uuid
+
+### POST Follow User
+POST http://localhost:8082/api/users/123456789/follow
+Accept: application/json
+X-user-id: uuid
+
+### DELETE Unfollow User
+DELETE http://localhost:8082/api/users/123456789/follow
+Accept: application/json
+X-user-id: uuid
+
+### POST Block User
+POST http://localhost:8082/api/users/123456789/block
+Accept: application/json
+X-user-id: uuid
+
+### DELETE Unblock User
+DELETE http://localhost:8082/api/users/123456789/block
+Accept: application/json
+X-user-id: uuid
+
+### GET Likes for Post
+GET http://localhost:8082/api/posts/123456789/likes
+Accept: application/json
+
+### GET Liked Posts for User
+GET http://localhost:8082/api/users/123456789/liked-posts
+Accept: application/json
+
+### GET User's Follows
+GET http://localhost:8082/api/users/123456789/follows
+Accept: application/json
+
+### GET User's Followers
+GET http://localhost:8082/api/users/123456789/followers
+Accept: application/json
+
+### GET User's Block List
+GET http://localhost:8082/api/users/123456789/block-list
+Accept: application/json
+
+### GET Users who Blocked User
+GET http://localhost:8082/api/users/123456789/blocked-by
+Accept: application/json

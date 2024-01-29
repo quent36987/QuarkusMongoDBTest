@@ -1,6 +1,8 @@
 package com.epita.controller;
 
+import com.epita.model.ActionModel;
 import com.epita.model.LikeModel;
+import com.epita.service.ActionPublisher;
 import com.epita.service.BlockService;
 import com.epita.service.LikeService;
 import jakarta.inject.Inject;
@@ -19,6 +21,9 @@ public class LikeController {
 
     @Inject
     BlockService blockService;
+
+    @Inject
+    ActionPublisher actionPublisher;
 
     public static class Parameter {
         @RestHeader("X-user-id")
@@ -51,6 +56,7 @@ public class LikeController {
         LikeModel like = likeService.likePost(parameter.userId, postId);
 
         if (like != null) {
+            actionPublisher.publishAction(new ActionModel(parameter.userId, postId, "like"));
             return Response.ok(like).build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -72,6 +78,7 @@ public class LikeController {
         LikeModel unlike =  likeService.unlikePost(parameter.userId, postId);
 
         if (unlike != null) {
+            actionPublisher.publishAction(new ActionModel(parameter.userId, postId, "unlike"));
             return Response.ok(unlike).build();
         } else {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -99,6 +106,7 @@ public class LikeController {
         var unlikeUnlikeDelete = likeService.deletelikePost(parameter.userId, postId);
 
         if (unlikeUnlikeDelete) {
+            actionPublisher.publishAction(new ActionModel(parameter.userId, postId, "deleteLike"));
             return Response.ok().build();
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
