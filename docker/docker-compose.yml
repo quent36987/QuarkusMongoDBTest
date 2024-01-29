@@ -49,18 +49,31 @@ services:
       - "9200"
       - "9300"
 
-  neo4j:
-    image: neo4j:3.5
-    container_name: epitweet_td_neo4j
+  repo-post:
+    build:
+      dockerfile: repo-post.Dockerfile
+      context: services
+    container_name: epitweet_td_repo-post
     restart: unless-stopped
-    environment:
-      - NEO4J_AUTH=none
-      - NEO4J_dbms_memory_pagecache_size=1G
-      - NEO4J_dbms.memory.heap.initial_size=1G
-      - NEO4J_dbms_memory_heap_max__size=1G
+    depends_on:
+      - mongo
+      - redis
     ports:
-      - 7474:7474
-      - 7687:7687
-    expose:
-      - "7474"
-      - "7687"
+      - 8081:8081
+
+
+#  neo4j:
+#    image: neo4j:3.5
+#    container_name: epitweet_td_neo4j
+#    restart: unless-stopped
+#    environment:
+#      - NEO4J_AUTH=none
+#      - NEO4J_dbms_memory_pagecache_size=1G
+#      - NEO4J_dbms.memory.heap.initial_size=1G
+#      - NEO4J_dbms_memory_heap_max__size=1G
+#    ports:
+#      - 7474:7474
+#      - 7687:7687
+#    expose:
+#      - "7474"
+#      - "7687"
