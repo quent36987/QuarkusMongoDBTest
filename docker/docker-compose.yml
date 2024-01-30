@@ -53,7 +53,12 @@ services:
     build:
       dockerfile: repo-post.Dockerfile
       context: services
-    container_name: epitweet_td_repo-post
+    container_name: epitweet_repo-post
+    environment:
+      MONGODB_HOST: mongo
+      MONGODB_PORT: 27017
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
     restart: unless-stopped
     depends_on:
       - mongo

@@ -3,9 +3,10 @@ FROM maven:3.8.3-openjdk-17-slim AS builder
 
 # Copiez les fichiers source de l'application dans le conteneur
 WORKDIR /app
+RUN mkdir /jar
 COPY . .
 RUN mvn -N io.takari:maven:wrapper
-RUN mvn clean package -DskipTests
+RUN mvn clean package -DskipTests -Dquarkus.package.type=uber-jar
 
 #RUN cp /app/srvc-user-timeline/target/*.jar /jar/
 #RUN cp /app/srvc-search/target/*.jar /jar/

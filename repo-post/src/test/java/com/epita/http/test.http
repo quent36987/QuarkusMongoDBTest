@@ -7,7 +7,7 @@ GET http://localhost:8081/api/posts/65b5757a0c912575d93dce7c
 Accept: application/json
 
 ### GET Posts with Environment Details
-GET http://localhost:8081/api/posts?show_env=1
+GET http://localhost:8081/api/posts
 Accept: application/json
 
 ### DELETE Post
