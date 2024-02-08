@@ -1,7 +1,7 @@
 package com.epita;
 
-import com.epita.controller.RequestBody.CreatePostRequestBody;
-import com.epita.model.PostModel;
+import com.epita.presentation.request.CreatePostRequest;
+import com.epita.presentation.response.PostResponse;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -78,72 +78,72 @@ public class PostEndpointIntegrationTest {
 
     @Test
     public void testCreatePostEndpoint() {
-        CreatePostRequestBody createPostRequestBody = new CreatePostRequestBody("Ceci est mon post !",null);
+        CreatePostRequest createPostRequestBody = new CreatePostRequest("Ceci est mon post !",null);
         Response reponse = callPostEndpoint("/posts", X_USER_1, createPostRequestBody);
 
         assertEquals(200,reponse.statusCode(), "Status code should be 200, got " + reponse.statusCode());
 
-        var post = reponse.as(PostModel.class);
+        var post = reponse.as(PostResponse.class);
 
         assertEquals(createPostRequestBody.getText(), post.text, "Post text should be the same, got " + post.text);
         assertEquals(createPostRequestBody.getMedia(), post.media, "Post media should be the same, got " + post.media);
         assertEquals(X_USER_1, post.userId, "Post userId should be the same, got " + post.userId);
 
-        reponse = callGetEndpoint("/posts/" + post.id.toString(), X_USER_1, null);
+        reponse = callGetEndpoint("/posts/" + post.id, X_USER_1, null);
 
         assertEquals(200,reponse.statusCode(),"Status code should be 200, got " + reponse.statusCode());
 
-        var post2 = reponse.as(PostModel.class);
+        var post2 = reponse.as(PostResponse.class);
 
         assertEquals(post.id, post2.id, "Post id should be the same");
 
-        reponse = callDeleteEndpoint("/posts/" + post.id.toString(), X_USER_1, null);
+        reponse = callDeleteEndpoint("/posts/" + post.id, X_USER_1, null);
 
         assertEquals(200,reponse.statusCode(),"Status code should be 200, got " + reponse.statusCode());
 
-        reponse = callGetEndpoint("/posts/" + post.id.toString(), X_USER_1, null);
+        reponse = callGetEndpoint("/posts/" + post.id, X_USER_1, null);
 
         assertEquals(404,reponse.statusCode(),"Status code should be 404, got " + reponse.statusCode());
     }
 
     @Test
     public void testCreatePostEndpointWithoutUserId() {
-        CreatePostRequestBody createPostRequestBody = new CreatePostRequestBody("Ce post ne devrait pas etre crée",null);
-        Response reponse = callPostEndpoint("/posts", null, createPostRequestBody);
+        CreatePostRequest createPostRequestBody = new CreatePostRequest("Ce post ne devrait pas etre crée",null);
+        Response response = callPostEndpoint("/posts", null, createPostRequestBody);
 
-        assertEquals(400,reponse.statusCode(), "Status code should be 400, got " + reponse.statusCode());
+        assertEquals(400, response.statusCode(), "Status code should be 400, got " + response.statusCode());
     }
 
     @Test
     public void testDeleteNotMine() {
-        CreatePostRequestBody createPostRequestBody = new CreatePostRequestBody("Ceci est mon post !",null);
+        CreatePostRequest createPostRequestBody = new CreatePostRequest("Ceci est mon post !",null);
         Response reponse = callPostEndpoint("/posts", X_USER_1, createPostRequestBody);
 
         assertEquals(200,reponse.statusCode(), "Status code should be 200, got " + reponse.statusCode());
 
-        var post = reponse.as(PostModel.class);
+        var post = reponse.as(PostResponse.class);
 
         assertEquals(createPostRequestBody.getText(), post.text, "Post text should be the same, got " + post.text);
         assertEquals(createPostRequestBody.getMedia(), post.media, "Post media should be the same, got " + post.media);
         assertEquals(X_USER_1, post.userId, "Post userId should be the same, got " + post.userId);
 
-        reponse = callGetEndpoint("/posts/" + post.id.toString(), X_USER_1, null);
+        reponse = callGetEndpoint("/posts/" + post.id, X_USER_1, null);
 
         assertEquals(200,reponse.statusCode(),"Status code should be 200, got " + reponse.statusCode());
 
-        var post2 = reponse.as(PostModel.class);
+        var post2 = reponse.as(PostResponse.class);
 
         assertEquals(post.id, post2.id, "Post id should be the same");
 
-        reponse = callDeleteEndpoint("/posts/" + post.id.toString(), X_USER_2, null);
+        reponse = callDeleteEndpoint("/posts/" + post.id, X_USER_2, null);
 
         assertEquals(400,reponse.statusCode(),"Status code should be 400, got " + reponse.statusCode());
 
-        reponse = callDeleteEndpoint("/posts/" + post.id.toString(), X_USER_1, null);
+        reponse = callDeleteEndpoint("/posts/" + post.id, X_USER_1, null);
 
         assertEquals(200,reponse.statusCode(),"Status code should be 200, got " + reponse.statusCode());
 
-        reponse = callGetEndpoint("/posts/" + post.id.toString(), X_USER_1, null);
+        reponse = callGetEndpoint("/posts/" + post.id, X_USER_1, null);
 
         assertEquals(404,reponse.statusCode(),"Status code should be 404, got " + reponse.statusCode());
     }

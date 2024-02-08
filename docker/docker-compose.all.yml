@@ -1,0 +1,159 @@
+name: epitweet
+
+services:
+  mongo:
+    image: mongo
+    container_name: epitweet_td_mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: Epitweet
+    volumes:
+      - ./init_mongo.js:/docker-entrypoint-initdb.d/init.js:ro
+    ports:
+      - 27017:27017
+    expose:
+      - "27017"
+    networks:
+      - mongodb-network
+
+  redis:
+    image: "redis:alpine"
+    container_name: epitweet_td_redis
+    restart: unless-stopped
+    command: redis-server
+    ports:
+      - 6379:6379
+    expose:
+      - "6379"
+    networks:
+      - redis-network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.1
+    container_name: epitweet_td_elasticsearch
+    restart: unless-stopped
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: 4194304
+        hard: 4194304
+      nofile:
+        soft: 65536
+        hard: 65536
+    mem_limit: 4g
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - 9200:9200
+      - 9300:9300
+    expose:
+      - "9200"
+      - "9300"
+    networks:
+      - elasticsearch-network
+
+  repo-post:
+    image: registry.gitlab.com/warg-group/s9-tinyx/repo-post:latest
+    container_name: epitweet_repo-post
+    environment:
+      PORT: 8081
+      MONGODB_HOST: mongo
+      MONGODB_PORT: 27017
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - redis
+    ports:
+      - 8081:8081
+    networks:
+      - mongodb-network
+      - redis-network
+      - api-network
+
+  repo-social:
+    image: registry.gitlab.com/warg-group/s9-tinyx/repo-social:latest
+    container_name: epitweet_repo-social
+    environment:
+      PORT: 8082
+      MONGODB_HOST: mongo
+      MONGODB_PORT: 27017
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - redis
+    ports:
+      - 8082:8082
+    networks:
+      - mongodb-network
+      - redis-network
+      - api-network
+
+  srvc-search:
+    image: registry.gitlab.com/warg-group/s9-tinyx/srvc-search:latest
+    container_name: epitweet_srvc-search
+    environment:
+      PORT: 8083
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      ELASTICSEARCH_HOST: elasticsearch
+      ELASTICSEARCH_PORT: 9200
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - redis
+      - elasticsearch
+    ports:
+      - 8083:8083
+    networks:
+      - elasticsearch-network
+      - redis-network
+      - api-network
+
+  srvc-user-timeline:
+    image: registry.gitlab.com/warg-group/s9-tinyx/srvc-user-timeline:latest
+    container_name: epitweet_srvc-user-timeline
+    environment:
+      PORT: 8084
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      ELASTICSEARCH_HOST: elasticsearch
+      ELASTICSEARCH_PORT: 9200
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - redis
+    ports:
+      - 8084:8084
+    networks:
+      - redis-network
+      - elasticsearch-network
+      - api-network
+
+  front-end:
+    image: registry.gitlab.com/warg-group/s9-tinyx/front-end-vue:latest
+    container_name: epitweet_front-end
+    restart: unless-stopped
+    depends_on:
+      - repo-post
+      - repo-social
+      - srvc-search
+      - srvc-user-timeline
+    ports:
+      - 8080:8080
+    networks:
+      - api-network
+
+
+networks:
+  api-network:
+  mongodb-network:
+  redis-network:
+  elasticsearch-network:

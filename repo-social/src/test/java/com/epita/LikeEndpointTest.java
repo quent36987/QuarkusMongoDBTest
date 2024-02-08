@@ -1,6 +1,6 @@
 package com.epita;
 
-import com.epita.model.LikeModel;
+import com.epita.presentation.response.LikeResponse;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -81,7 +81,7 @@ public class LikeEndpointTest {
 
         assertResponse(response, 200);
 
-        LikeModel like = response.as(LikeModel.class);
+        LikeResponse like = response.as(LikeResponse.class);
 
         assertEquals(X_USER_1, like.userId);
         assertEquals("1", like.postId);
@@ -91,7 +91,7 @@ public class LikeEndpointTest {
 
         assertResponse(response, 200);
 
-        LikeModel[] likes = response.as(LikeModel[].class);
+        LikeResponse[] likes = response.as(LikeResponse[].class);
 
         var likeFound = Arrays.stream(likes).filter(l -> l.id.equals(like.id)).findFirst();
 
@@ -105,7 +105,7 @@ public class LikeEndpointTest {
 
         assertResponse(response, 200);
 
-        LikeModel[] likes2 = response.as(LikeModel[].class);
+        LikeResponse[] likes2 = response.as(LikeResponse[].class);
 
         var likeFound2 = Arrays.stream(likes2).filter(l -> l.id.equals(like.id)).findFirst();
 

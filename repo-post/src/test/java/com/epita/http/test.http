@@ -3,7 +3,7 @@ GET http://localhost:8081/api/posts
 Accept: application/json
 
 ### GET Post by ID
-GET http://localhost:8081/api/posts/65b5757a0c912575d93dce7c
+GET http://localhost:8081/api/posts/65bc07230f6f0d4a5181cfd6
 Accept: application/json
 
 ### GET Posts with Environment Details
@@ -18,7 +18,7 @@ X-user-id: uuid
 ### POST Create Post
 POST http://localhost:8081/api/posts
 Content-Type: application/json
-X-user-id: uuid
+X-user-id: quentin
 
 {
   "text": "Contenu du nouveau post.",

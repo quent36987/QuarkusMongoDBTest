@@ -1,0 +1,123 @@
+include:
+  - local: .gitlab/rules.yml
+
+default:
+  image: maven:3.8.3-openjdk-17-slim
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  MONGODB_HOST: mongodb
+  MONGODB_PORT: 27017
+  REDIS_HOST: redis
+  REDIS_PORT: 6379
+  ELASTICSEARCH_HOST: elasticsearch
+  ELASTICSEARCH_PORT: 9200
+
+cache:
+  paths:
+    - $CI_PROJECT_DIR/.m2/repository
+
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+  extends: [ .run_always ]
+  script:
+    - mvn package -Dmaven.test.skip
+  artifacts:
+    paths:
+      - repo-post/target
+      - repo-social/target
+      - srvc-search/target
+      - srvc-user-timeline/target
+
+test:
+  stage: test
+  extends: [ .run_always ]
+  image: maven:3.8.3-openjdk-17-slim
+  services:
+    - name: mongo
+      alias: mongodb
+      variables:
+        MONGO_INITDB_ROOT_USERNAME: admin
+        MONGO_INITDB_ROOT_PASSWORD: admin
+        MONGO_INITDB_DATABASE: Epitweet
+    - name: redis:alpine
+      alias: redis
+    - name: docker.elastic.co/elasticsearch/elasticsearch:8.8.1
+      alias: elasticsearch
+      variables:
+        xpack.security.enabled: 'false'
+        discovery.type: single-node
+  script:
+    - apt-get update && apt-get install -y wait-for-it
+    - wait-for-it mongodb:27017 --timeout=20
+    - mvn test
+  artifacts:
+    when: always
+    reports:
+      junit: "**/target/surefire-reports/*.xml"
+  needs:
+    - build
+
+docker-deploy:
+  stage: deploy
+  image: docker:20.10.16
+  extends: [ .run_always ]
+  services:
+    - docker:20.10.16-dind
+  script:
+    - echo $CI_REGISTRY_IMAGE
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - cd $CI_PROJECT_DIR/repo-post
+    - docker build -t $CI_REGISTRY_IMAGE/repo-post .
+    - docker push $CI_REGISTRY_IMAGE/repo-post
+    - cd $CI_PROJECT_DIR/repo-social
+    - docker build -t $CI_REGISTRY_IMAGE/repo-social .
+    - docker push $CI_REGISTRY_IMAGE/repo-social
+    - cd $CI_PROJECT_DIR/srvc-search
+    - docker build -t $CI_REGISTRY_IMAGE/srvc-search .
+    - docker push $CI_REGISTRY_IMAGE/srvc-search
+    - cd $CI_PROJECT_DIR/srvc-user-timeline
+    - docker build -t $CI_REGISTRY_IMAGE/srvc-user-timeline .
+    - docker push $CI_REGISTRY_IMAGE/srvc-user-timeline
+  needs:
+    - test
+    - build
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+
+pages:
+  stage: deploy
+  extends: [ .run_always ]
+  image: node:latest
+  script:
+    - npm install -g redoc-cli
+    - redoc-cli bundle -o public/repo-post.html repo-post/target/generated/openapi.yaml
+    - redoc-cli bundle -o public/repo-social.html repo-social/target/generated/openapi.yaml
+    - redoc-cli bundle -o public/srvc-search.html srvc-search/target/generated/openapi.yaml
+    - redoc-cli bundle -o public/srvc-user-timeline.html srvc-user-timeline/target/generated/openapi.yaml
+    - cp .gitlab/index.html public/index.html
+  artifacts:
+    paths:
+      - public
+  needs:
+    - test
+    - build
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+
+docker-front:
+  stage: deploy
+  image: docker:20.10.16
+  extends: [ .run_always ]
+  services:
+    - docker:20.10.16-dind
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - cd $CI_PROJECT_DIR/front-end-vue
+    - docker build -t $CI_REGISTRY_IMAGE/front-end-vue .
+    - docker push $CI_REGISTRY_IMAGE/front-end-vue

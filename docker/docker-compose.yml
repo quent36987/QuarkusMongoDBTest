@@ -1,5 +1,6 @@
-services:
+name: epitweet
 
+services:
   mongo:
     image: mongo
     container_name: epitweet_td_mongo
@@ -14,6 +15,8 @@ services:
       - 27017:27017
     expose:
       - "27017"
+    networks:
+      - mongodb-network
 
   redis:
     image: "redis:alpine"
@@ -24,6 +27,8 @@ services:
       - 6379:6379
     expose:
       - "6379"
+    networks:
+      - redis-network
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.8.1
@@ -48,37 +53,10 @@ services:
     expose:
       - "9200"
       - "9300"
+    networks:
+      - elasticsearch-network
 
-  repo-post:
-    build:
-      dockerfile: repo-post.Dockerfile
-      context: services
-    container_name: epitweet_repo-post
-    environment:
-      MONGODB_HOST: mongo
-      MONGODB_PORT: 27017
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-    restart: unless-stopped
-    depends_on:
-      - mongo
-      - redis
-    ports:
-      - 8081:8081
-
-
-#  neo4j:
-#    image: neo4j:3.5
-#    container_name: epitweet_td_neo4j
-#    restart: unless-stopped
-#    environment:
-#      - NEO4J_AUTH=none
-#      - NEO4J_dbms_memory_pagecache_size=1G
-#      - NEO4J_dbms.memory.heap.initial_size=1G
-#      - NEO4J_dbms_memory_heap_max__size=1G
-#    ports:
-#      - 7474:7474
-#      - 7687:7687
-#    expose:
-#      - "7474"
-#      - "7687"
+networks:
+  mongodb-network:
+  redis-network:
+  elasticsearch-network:
